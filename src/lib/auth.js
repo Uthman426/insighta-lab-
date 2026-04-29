@@ -7,7 +7,7 @@ export async function getUser() {
   if (!token) return null;
 
   const res = await fetch(
-    `${process.env.BACKEND_URL || "http://localhost:3000/api"}/auth/me`,
+    `${process.env.BACKEND_URL}/auth/me`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

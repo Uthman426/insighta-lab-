@@ -68,7 +68,7 @@
 import { cookies } from "next/headers";
 import { verifyCSRF } from "@/lib/csrf";
 
-const BASE = process.env.BACKEND_URL || "http://localhost:3000/api";
+const BASE = process.env.BACKEND_URL ;
 
 async function sendBackendRequest({ req, path, query, method, token }) {
   const body = method === "GET" ? undefined : await req.clone().text();
