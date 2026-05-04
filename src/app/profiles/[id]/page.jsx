@@ -9,14 +9,23 @@ export default function ProfileDetailPage() {
   const router = useRouter();
 
   const [profile, setProfile] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState("");
 
+  const isAdmin = user?.role === "admin";
+
   useEffect(() => {
-    async function loadProfile() {
+    async function loadData() {
       try {
-        const res = await connectapi(`/profiles/${id}`);
-        setProfile(res.data);
+        const [profileRes, userRes] = await Promise.all([
+          connectapi(`/profiles/${id}`),
+          connectapi("/auth/me"),
+        ]);
+
+        setProfile(profileRes.data);
+        setUser(userRes.user);
       } catch (err) {
         setMessage(err.message || "Failed to load profile");
       } finally {
@@ -24,8 +33,31 @@ export default function ProfileDetailPage() {
       }
     }
 
-    if (id) loadProfile();
+    if (id) loadData();
   }, [id]);
+
+  const deleteProfile = async () => {
+    const confirmed = window.confirm(
+      `Delete ${profile.name}? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setMessage("");
+
+    try {
+      await connectapi(`/profiles/${profile.id}`, {
+        method: "DELETE",
+      });
+
+      router.push("/profiles");
+    } catch (err) {
+      setMessage(err.message || "Failed to delete profile");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -35,7 +67,7 @@ export default function ProfileDetailPage() {
     );
   }
 
-  if (message) {
+  if (message && !profile) {
     return (
       <main className="p-6">
         <button
@@ -52,12 +84,26 @@ export default function ProfileDetailPage() {
 
   return (
     <main className="p-6 max-w-3xl">
-      <button
-        onClick={() => router.back()}
-        className="mb-6 border px-3 py-2 rounded"
-      >
-        Back
-      </button>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <button
+          onClick={() => router.back()}
+          className="border px-3 py-2 rounded"
+        >
+          Back
+        </button>
+
+        {isAdmin && (
+          <button
+            onClick={deleteProfile}
+            disabled={deleting}
+            className="bg-red-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          >
+            {deleting ? "Deleting..." : "Delete Profile"}
+          </button>
+        )}
+      </div>
+
+      {message && <p className="mb-4 text-red-600">{message}</p>}
 
       <section className="border rounded p-6">
         <h1 className="text-2xl font-semibold mb-1">{profile.name}</h1>

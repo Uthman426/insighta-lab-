@@ -1,20 +1,3 @@
-// export async function connectapi(path, options = {}) {
-//   const res = await fetch(`/api/proxy${path}`, {
-//     ...options,
-//     headers: {
-//       "Content-Type": "application/json",
-//       ...(options.headers || {}),
-//     },
-//   });
-
-//   const data = await res.json();
-
-//   if (!res.ok) {
-//     throw new Error(data.message || "Request failed");
-//   }
-
-//   return data;
-// }
 async function getCSRFToken() {
   const res = await fetch("/api/csrf", {
     cache: "no-store",
@@ -42,10 +25,20 @@ export async function connectapi(path, options = {}) {
     headers,
   });
 
-  const data = await res.json();
+  if (res.status === 204) {
+    return { status: "success" };
+  }
+
+  const contentType = res.headers.get("content-type") || "";
+
+  const data = contentType.includes("application/json")
+    ? await res.json()
+    : await res.text();
 
   if (!res.ok) {
-    throw new Error(data.message || "Request failed");
+    throw new Error(
+      typeof data === "object" ? data.message || "Request failed" : data
+    );
   }
 
   return data;
