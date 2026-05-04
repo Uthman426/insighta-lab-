@@ -53,7 +53,7 @@ export default async function Dashboard() {
           <DashboardCard
             href="/profiles"
             title="Profiles"
-            description="Browse all saved profiles with filters, pagination, and detail views."
+            description="Browse saved profiles with filters, pagination, and detail views."
             action="Open profiles"
           />
 
@@ -67,7 +67,7 @@ export default async function Dashboard() {
           <DashboardCard
             href="/account"
             title="Account"
-            description="View your GitHub account details, current role, and access status."
+            description="View your GitHub identity, current role, and account access."
             action="Open account"
           />
 
@@ -87,17 +87,17 @@ export default async function Dashboard() {
           )}
 
           <DashboardCard
-            href="/login"
-            title="Login"
-            description="Return to the GitHub login screen if you need to refresh your session."
-            action="Go to login"
+            href="/profiles"
+            title="Profile details"
+            description="Open a profile from the profiles list or search results to inspect its full record."
+            action="Find profile"
           />
 
           <DashboardCard
-            href="/profiles"
-            title="Profile details"
-            description="Open a profile from the profiles list or search results to view full details."
-            action="Find profile"
+            href="/login"
+            title="Login"
+            description="Return to the GitHub login screen if you need to renew your session."
+            action="Go to login"
           />
         </div>
 
